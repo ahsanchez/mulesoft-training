@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_COVID" doc:name="HTTP Listener config" doc:id="93b90b06-9aa4-4ad7-a564-c4c1fbd4d7c1" basePath="covid" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<flow name="register-covid-caseFlow" doc:id="a2a2de20-01ca-414b-ba0c-1e14ac2ce732" >
+		<http:listener doc:name="Listener" doc:id="d13c77c9-72b4-4de7-b41a-8edc82c1c376" config-ref="HTTP_Listener_COVID" path="v1/cases" allowedMethods="POST">
+			<http:response reasonPhrase='#[vars.httpReason]' statusCode="#[vars.statusCode]">
+			</http:response>
+		</http:listener>
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="cdb7aebd-f369-4340-a51d-c76e7e4dcc07" variableName="covidPayload"/>
+		<logger level="INFO" doc:name="Logger" doc:id="acfdd7ef-b105-4249-bfd6-f8264eba8dd0" message="#[payload.source]"/>
+		<ee:transform doc:name="Transform Message" doc:id="f0b673b6-1af4-4d99-aa25-21f727f33ef4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-variable value="Ana" doc:name="Set Variable" doc:id="9ecb809f-342f-4da1-beef-208e0b61e6f3" variableName="userName"/>
+		<logger level="INFO" doc:name="Logger" doc:id="f1172e3d-72b8-4d87-9231-6d02834b67be" message="#[vars.userName]"/>
+		<set-payload value='#["success-response"]' doc:name="Set Payload" doc:id="b7466625-9769-4866-9522-90e9282399f7" />
+		<set-variable value="200" doc:name="Set Variable" doc:id="b9328b32-f3e6-45e8-a8e9-3673bf8b487b" variableName="statusCode"/>
+		<set-variable value='"OK"' doc:name="Set Variable" doc:id="8e02e99e-ce03-4b28-8fee-d0c69add4f00" variableName="httpReason"/>
+	</flow>
+</mule>

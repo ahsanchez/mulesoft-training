@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="e225b0eb-08aa-47dc-be85-b97969b48334" basePath="emp-sapi" >
+		<http:listener-connection host="0.0.0.0" port="8083" />
+	</http:listener-config>
+	<flow name="create-employeeFlow" doc:id="d364f7f1-0533-44a9-ac63-42db4a0943ff" >
+		<http:listener doc:name="Listener" doc:id="6bd83870-48c6-4be0-a2a9-b90f839f899f" config-ref="HTTP_Listener_config1" path="create-employee"/>
+		<logger level="INFO" doc:name="Start Log" doc:id="ebe47fd0-a9ed-4200-b1a5-bc283c42d515" message="The create employee flow started"/>
+		<db:insert doc:name="Insert" doc:id="f2f8f8f0-991f-41e2-95ce-90b477174794" />
+	</flow>
+</mule>
