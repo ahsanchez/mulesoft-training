@@ -28,6 +28,19 @@ type register_covid_case_meta_data = {|
     <types:type name="who-case-meta-data" format="xml">
       <types:example format="xml" element="COVID_CASE" location="examples/who-covid-case-request-payload.xml"/>
     </types:type>
+    <types:type name="success-response" format="json">
+      <types:shape format="weave" example="examples/success-response.json"><![CDATA[%dw 2.0
+
+type success_response = {|
+  status: Number {"typeId": "int"}, 
+  message: String
+|} {"example": "{\\\"status\\\":200,\\\"message\\\":\\\"Success\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="update-employee-response" format="xml">
+      <types:example format="xml" element="response" location="examples/update-employee-response.xml"/>
+    </types:type>
   </types:catalog>
   <types:enrichment select="#1d064503-e4b9-4a78-8f76-5bc7ba29ed0a">
     <types:processor-declaration>
@@ -39,6 +52,24 @@ type register_covid_case_meta_data = {|
       <types:output-event>
         <types:message>
           <types:payload type="who-case-meta-data"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#b6f768ee-68b6-4c18-93a6-5d8c0b9c02c8">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="success-response"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#2c0a13a9-6f22-4d73-b9af-f44c78922173">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="update-employee-response"/>
         </types:message>
       </types:output-event>
     </types:processor-declaration>

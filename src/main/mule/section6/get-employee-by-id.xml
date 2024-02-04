@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="get-employee-by-idFlow" doc:id="752c9c1b-47f4-4f5d-9f97-0628003f75e6" >
+		<http:listener doc:name="Get employee Listener" doc:id="4004441c-3ea0-4cf5-9919-606c832903f6" config-ref="HTTP_Listener_config1" path="get-employee" allowedMethods="GET"/>
+		<logger level="INFO" doc:name="Start Log" doc:id="5ac21f5a-8f5c-42a9-8b3e-76dc88f1ad37" message="Started employee by id flow"/>
+		<db:select doc:name="Select Employee" doc:id="aaec7451-783c-4056-8fbe-16c9768d7e34" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT EMP_ID, EMP_NAME, EMP_STATUS FROM EMP WHERE EMP_ID=:empID]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	empID:attributes.queryParams.empID
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Set Response" doc:id="ed878f26-0eef-4758-831c-9a35e1e974ed" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	employeeID: payload[0].EMP_ID,
+	employeeName: payload[0].EMP_NAME,
+	employeeStatus: payload[0].EMP_STATUS
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="End log" doc:id="28a877c5-f81a-4fd3-9e2c-13aac1d2e730" message="Completed get employee flow"/>
+	</flow>
+</mule>

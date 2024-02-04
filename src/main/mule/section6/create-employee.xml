@@ -1,16 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http"
-	xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
-http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="e225b0eb-08aa-47dc-be85-b97969b48334" basePath="emp-sapi" >
 		<http:listener-connection host="0.0.0.0" port="8083" />
 	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="5a63ae3e-47d8-4462-91a4-b0176bb1f2da" >
+		<db:oracle-connection host="localhost" user="ADMIN" password="admin" instance="XE" />
+	</db:config>
 	<flow name="create-employeeFlow" doc:id="d364f7f1-0533-44a9-ac63-42db4a0943ff" >
-		<http:listener doc:name="Listener" doc:id="6bd83870-48c6-4be0-a2a9-b90f839f899f" config-ref="HTTP_Listener_config1" path="create-employee"/>
+		<http:listener doc:name="Listener" doc:id="6bd83870-48c6-4be0-a2a9-b90f839f899f" config-ref="HTTP_Listener_config1" path="create-employee" allowedMethods="POST"/>
 		<logger level="INFO" doc:name="Start Log" doc:id="ebe47fd0-a9ed-4200-b1a5-bc283c42d515" message="The create employee flow started"/>
-		<db:insert doc:name="Insert" doc:id="f2f8f8f0-991f-41e2-95ce-90b477174794" />
+		<db:insert doc:name="Insert" doc:id="f2f8f8f0-991f-41e2-95ce-90b477174794" config-ref="Database_Config">
+			<db:sql ><![CDATA[INSERT INTO EMP (EMP_ID, EMP_NAME, EMP_STATUS) VALUES (:empID, :empName, :empStatus)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	empID: payload.employeeID,
+	empName: payload.employeeName,
+	empStatus: payload.employeeStatus
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="b6f768ee-68b6-4c18-93a6-5d8c0b9c02c8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	status: 200,
+	message: "Success"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="End log" doc:id="02c50c26-8901-4ed6-a629-217a59e7127e" message="The flow has completed"/>
 	</flow>
 </mule>

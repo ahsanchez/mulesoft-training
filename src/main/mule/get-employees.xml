@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="get-employeesFlow" doc:id="1a4e6f2c-67ba-4e2b-8882-63efc6093bdc" >
+		<http:listener doc:name="Listener" doc:id="5eb794c1-a631-4c80-b759-dd1fb2c314ac" config-ref="HTTP_Listener_config1" path="get-employees" allowedMethods="GET"/>
+		<db:select doc:name="Select" doc:id="9e1332ed-87ea-45e5-82a9-2b447f7aa6bf" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT EMP_ID, EMP_NAME, EMP_STATUS FROM EMP]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="6bf4cf28-3287-4f60-9abf-c8f9c04bc64c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
